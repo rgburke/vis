@@ -89,6 +89,7 @@ static bool cmd_help(Vis*, Filerange*, enum CmdOpt, const char *argv[]);
 /* change runtime key bindings */
 static bool cmd_map(Vis*, Filerange*, enum CmdOpt, const char *argv[]);
 static bool cmd_unmap(Vis*, Filerange*, enum CmdOpt, const char *argv[]);
+static bool cmd_dump(Vis*, Filerange*, enum CmdOpt opt, const char *argv[]);
 
 /* command recognized at the ':'-prompt. commands are found using a unique
  * prefix match. that is if a command should be available under an abbreviation
@@ -97,6 +98,7 @@ static bool cmd_unmap(Vis*, Filerange*, enum CmdOpt, const char *argv[]);
 static const Command cmds[] = {
 	/* command name / optional alias, function,          options */
 	{ { "bdelete"                  }, cmd_bdelete,       CMD_OPT_FORCE              },
+	{ { "dump"                     }, cmd_dump,          CMD_OPT_NONE               },
 	{ { "edit", "e"                }, cmd_edit,          CMD_OPT_FORCE              },
 	{ { "help"                     }, cmd_help,          CMD_OPT_NONE               },
 	{ { "map",                     }, cmd_map,           CMD_OPT_FORCE|CMD_OPT_ARGS },
@@ -1101,6 +1103,12 @@ static bool cmd_unmap(Vis *vis, Filerange *range, enum CmdOpt opt, const char *a
 		return vis_window_mode_unmap(vis->win, mode, lhs);
 	else
 		return vis_mode_unmap(vis, mode, lhs);
+}
+
+static bool cmd_dump(Vis *vis, Filerange *range, enum CmdOpt opt, const char *argv[]) {
+	if (!argv[1])
+		return false;
+	return text_dump(vis->win->file->text, argv[1]);
 }
 
 static Filepos parse_pos(Win *win, char **cmd) {
